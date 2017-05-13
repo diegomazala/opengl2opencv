@@ -17,7 +17,7 @@ static cv::Mat get_cv_img_from_gl_img(GLuint ogl_texture_id)
 	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &gl_texture_height);
 
 	unsigned char* gl_texture_bytes = (unsigned char*)malloc(sizeof(unsigned char) * gl_texture_width * gl_texture_height * 4);
-	glGetTexImage(GL_TEXTURE_2D, 0, GL_BGRA, GL_UNSIGNED_BYTE, gl_texture_bytes);
+	glGetTexImage(GL_TEXTURE_2D, 0, pixel_format, GL_UNSIGNED_BYTE, gl_texture_bytes);
 
 	return cv::Mat(gl_texture_height, gl_texture_width, CV_8UC4, gl_texture_bytes);
 }

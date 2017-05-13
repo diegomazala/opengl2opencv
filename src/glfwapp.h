@@ -46,6 +46,10 @@ static GLuint triangle_vao;
 static GLuint quad_vao;
 
 static GLuint texture_id;
+static GLuint pbo_id;
+
+static const GLenum pixel_format = GL_RGBA;
+
 static const int tex_width = 1024;
 static const int tex_height = 1024;
 static const int tex_channels = 4;
@@ -55,8 +59,7 @@ static const int buffer_width = tex_width;
 static const int buffer_height = tex_height;
 static const int buffer_channels = tex_channels;
 static const int buffer_data_size = buffer_width * buffer_height * buffer_channels;
-static const GLenum buffer_pixel_format = GL_BGRA;
-static GLuint pbo_id;
+
 
 #define check_gl_error() _check_gl_error(__FILE__,__LINE__)
 void _check_gl_error(const char *file, int line) 
@@ -267,6 +270,8 @@ static int create_window()
 	glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
 
 	glfwSetKeyCallback(window, key_callback);
+
+	return EXIT_SUCCESS;
 }
 
 
@@ -319,7 +324,7 @@ static void create_texture()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tex_width, tex_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, texture_data);
+	glTexImage2D(GL_TEXTURE_2D, 0, pixel_format, tex_width, tex_height, 0, pixel_format, GL_UNSIGNED_BYTE, texture_data);
 }
 
 
