@@ -11,11 +11,11 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\main.cpp" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="..\src\glfwapp.h" />
     <ClInclude Include="..\src\time.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\opengl2opencv.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{7F6AD3AC-ECD7-45D1-B86B-AE468B9AC4D5}</ProjectGuid>

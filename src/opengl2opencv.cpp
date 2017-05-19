@@ -97,7 +97,7 @@ int main(void)
 	cv::imshow(window_pbo_buf, cv_gl_pbo_buf);
 
 
-	test_cases();
+	//test_cases();
 
 	// 
 	// GL loop

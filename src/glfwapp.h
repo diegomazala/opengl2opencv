@@ -50,8 +50,8 @@ static GLuint pbo_id;
 
 static const GLenum pixel_format = GL_RGBA;
 
-static const int tex_width = 1024;
-static const int tex_height = 1024;
+static const int tex_width = 64;
+static const int tex_height = 64;
 static const int tex_channels = 4;
 static GLubyte texture_data[tex_width][tex_height][tex_channels];
 
@@ -60,6 +60,8 @@ static const int buffer_height = tex_height;
 static const int buffer_channels = tex_channels;
 static const int buffer_data_size = buffer_width * buffer_height * buffer_channels;
 
+static float red_channel = 0.2f;
+static float color_inc = 0.01f;
 
 #define check_gl_error() _check_gl_error(__FILE__,__LINE__)
 void _check_gl_error(const char *file, int line) 
@@ -211,7 +213,16 @@ static void render()
 	// Make the window's context current
 	glfwMakeContextCurrent(window);
 
-	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+
+	if (red_channel > 1.0f || red_channel < 0.0f)
+	{
+		color_inc *= -1.f;
+		red_channel = (int)red_channel;
+	}
+
+	red_channel += color_inc;
+
+	glClearColor(red_channel, 0.3f, 0.3f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glUseProgram(shader_program);

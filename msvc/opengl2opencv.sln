@@ -5,6 +5,8 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "opengl2opencv", "opengl2opencv.vcxproj", "{7F6AD3AC-ECD7-45D1-B86B-AE468B9AC4D5}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "opencv2opengl", "opencv2opengl.vcxproj", "{44648980-9C3D-4F29-B969-2E3DFB23FD8C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -15,6 +17,10 @@ Global
 		{7F6AD3AC-ECD7-45D1-B86B-AE468B9AC4D5}.Debug|x64.Build.0 = Debug|x64
 		{7F6AD3AC-ECD7-45D1-B86B-AE468B9AC4D5}.Release|x64.ActiveCfg = Release|x64
 		{7F6AD3AC-ECD7-45D1-B86B-AE468B9AC4D5}.Release|x64.Build.0 = Release|x64
+		{44648980-9C3D-4F29-B969-2E3DFB23FD8C}.Debug|x64.ActiveCfg = Debug|x64
+		{44648980-9C3D-4F29-B969-2E3DFB23FD8C}.Debug|x64.Build.0 = Debug|x64
+		{44648980-9C3D-4F29-B969-2E3DFB23FD8C}.Release|x64.ActiveCfg = Release|x64
+		{44648980-9C3D-4F29-B969-2E3DFB23FD8C}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
