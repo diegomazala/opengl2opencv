@@ -50,8 +50,8 @@ static GLuint pbo_id;
 
 static const GLenum pixel_format = GL_RGBA;
 
-static const int tex_width = 64;
-static const int tex_height = 64;
+static const int tex_width = 256;
+static const int tex_height = 256;
 static const int tex_channels = 4;
 static GLubyte texture_data[tex_width][tex_height][tex_channels];
 
@@ -259,7 +259,7 @@ static int create_window()
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);	//We don't want the old OpenGL 
 
 	// Open a window and create its OpenGL context
-	window = glfwCreateWindow(256, 256, "Tutorial 01", NULL, NULL);
+	window = glfwCreateWindow(256, 256, "OpenGL Window", NULL, NULL);
 	if (window == NULL) 
 	{
 		std::cerr << "Failed to open GLFW window. If you have an Intel GPU, they are not 3.3 compatible. Try the 2.1 version of the tutorials." << std::endl;
@@ -314,19 +314,49 @@ static void cleanup()
 
 
 
-static void create_texture()
+static float time_ticks()
 {
-	for (int i = 0; i < tex_height; i++) 
+	typedef std::chrono::high_resolution_clock clock;
+	typedef std::chrono::duration<float, std::milli> duration;
+
+	static clock::time_point start = clock::now();
+	duration elapsed = clock::now() - start;
+	return elapsed.count();
+}
+
+static void fill_texture_data()
+{
+	const float PI = 3.141592f;
+
+	for (int i = 0; i < tex_height; i++)
 	{
-		for (int j = 0; j < tex_width; j++) 
+		for (int j = 0; j < tex_width; j++)
 		{
+#if 0
 			int c = ((((i & 0x8) == 0) ^ ((j & 0x8)) == 0)) * 255;
 			texture_data[i][j][0] = (GLubyte)c;
 			texture_data[i][j][1] = (GLubyte)c;
 			texture_data[i][j][2] = (GLubyte)c;
 			texture_data[i][j][3] = (GLubyte)255;
+#else
+			float uv_x = float(j + 1) / float(tex_width);
+			float uv_y = float(i + 1) / float(tex_width);
+			float pos_x = PI * (2.f * uv_x - 1.f);
+			float pos_y = PI * (2.f * uv_y - 1.f);
+			float ch = abs(sin(10.f * pos_y + 10.f * sin(pos_x + time_ticks() * 0.002f)));
+
+			texture_data[i][j][0] = (GLubyte)(50 * ch);
+			texture_data[i][j][1] = (GLubyte)(130 * ch);
+			texture_data[i][j][2] = (GLubyte)(255 * ch);
+			texture_data[i][j][3] = (GLubyte)255;
+#endif
 		}
 	}
+}
+
+static void create_texture()
+{
+	fill_texture_data();
 
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 	glGenTextures(1, &texture_id);
@@ -337,6 +367,7 @@ static void create_texture()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexImage2D(GL_TEXTURE_2D, 0, pixel_format, tex_width, tex_height, 0, pixel_format, GL_UNSIGNED_BYTE, texture_data);
 }
+
 
 
 #endif // !_GLFW_APP_H_

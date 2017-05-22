@@ -5,9 +5,9 @@
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/highgui.hpp>
 
-const float PI = 3.141592f;
 
-float mticks()
+
+static float mticks()
 {
 	typedef std::chrono::high_resolution_clock clock;
 	typedef std::chrono::duration<float, std::milli> duration;
@@ -17,9 +17,10 @@ float mticks()
 	return elapsed.count();
 }
 
-static float t = 0;
-void fill_cv_image(cv::Mat& cv_image)
+static void fill_cv_image(cv::Mat& cv_image)
 {
+	const float PI = 3.141592f;
+
 	for (int i = 0; i<cv_image.rows; i++)
 	{
 		for (int j = 0; j<cv_image.cols; j++)
@@ -31,6 +32,39 @@ void fill_cv_image(cv::Mat& cv_image)
 		}
 	}
 }
+
+
+void get_gl_tex_from_cv_img(GLuint tex_id, const cv::Mat& image)
+{
+	if (image.empty())
+	{
+		std::cerr << "Error: image empty" << std::endl;
+		return;
+	}
+
+	glBindTexture(GL_TEXTURE_2D, tex_id);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	// Set texture clamping method
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+
+	glTexImage2D(
+		GL_TEXTURE_2D,       // Type of texture
+		0,                   // Pyramid level (for mip-mapping) - 0 is the top level
+		GL_RGB,              // Internal colour format to convert to
+		image.cols,          // Image width  
+		image.rows,          // Image height 
+		0,                   // Border width in pixels (can either be 1 or 0)
+		GL_BGR,              // Input image format (i.e. GL_RGB, GL_RGBA, GL_BGR etc.)
+		GL_UNSIGNED_BYTE,    // Image data type
+		image.ptr());        // The actual image data itself
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
 
 int main(void)
 {	
@@ -48,7 +82,7 @@ int main(void)
 	// OpenCV windows
 	//
 	const char* cv_window = "cv_window";
-	cv::Mat cv_image = cv::Mat(256, 256, CV_8UC3, cv::Scalar(0, 0, 0));
+	cv::Mat cv_image = cv::Mat(tex_width, tex_height, CV_8UC3, cv::Scalar(0, 0, 0));
 	cv::namedWindow(cv_window);
 	fill_cv_image(cv_image);
 	
@@ -66,8 +100,15 @@ int main(void)
 
 		render();
 
+		beginTime();
 		fill_cv_image(cv_image);
+		endTime("cv fill image (ms)             : ");
+
 		cv::imshow(cv_window, cv_image);
+
+		beginTime();
+		get_gl_tex_from_cv_img(texture_id, cv_image);
+		endTime("gl tex from cv img (ms)        : ");
 	}
 
 	//

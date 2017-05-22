@@ -17,7 +17,7 @@ static cv::Mat get_cv_img_from_gl_img(GLuint ogl_texture_id)
 	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &gl_texture_height);
 
 	unsigned char* gl_texture_bytes = (unsigned char*)malloc(sizeof(unsigned char) * gl_texture_width * gl_texture_height * 4);
-	glGetTexImage(GL_TEXTURE_2D, 0, pixel_format, GL_UNSIGNED_BYTE, gl_texture_bytes);
+	glGetTexImage(GL_TEXTURE_2D, 0, GL_BGRA, GL_UNSIGNED_BYTE, gl_texture_bytes);
 
 	return cv::Mat(gl_texture_height, gl_texture_width, CV_8UC4, gl_texture_bytes);
 }
@@ -85,7 +85,6 @@ int main(void)
 
 	
 
-
 	//
 	// OpenCV windows
 	//
@@ -102,7 +101,48 @@ int main(void)
 	// 
 	// GL loop
 	//
-	main_loop();
+	//main_loop();
+
+	glfwFocusWindow(window);
+
+	while (!glfwWindowShouldClose(window))
+	{
+		// Poll for and process events
+		glfwPollEvents();
+
+		fill_texture_data();
+
+		//
+		// update gl texture
+		//
+		glBindTexture(GL_TEXTURE_2D, texture_id);
+		glTexImage2D(GL_TEXTURE_2D, 0, pixel_format, tex_width, tex_height, 0, pixel_format, GL_UNSIGNED_BYTE, texture_data);
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+		render();
+
+		//
+		// Transfer texture to PBO
+		beginTime();
+		transfer_to_pbo(texture_id);
+		endTime("transfer texture to pbo (ms)   : ");
+		//
+		// map/ummap buffer from glTexture
+		//
+		beginTime();
+		cv_gl_pbo_buf = get_cv_img_from_gl_buffer(pbo_id, texture_id);
+		endTime("cv from glMap/glUnmap PBO (ms) : ");
+
+		//
+		// glGetTexImage from glTexture
+		//
+		beginTime();
+		cv_gl_image = get_cv_img_from_gl_img(texture_id);
+		endTime("cv from glGetTexImage TEX (ms) : ");
+
+		cv::imshow(window_tex, cv_gl_image);
+		cv::imshow(window_pbo_buf, cv_gl_pbo_buf);
+	}
 	
 
 	//
